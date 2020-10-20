@@ -56,7 +56,24 @@ def String2Tree(A):
 			print("Hay un problema: el simbolo " + str(c) + " no se reconoce")
 	return Pila[-1]
 	
-
+def Inorder2Tree(A):
+	if len(A) == 1:
+		return Tree(A[0], None, None)
+	elif A[0] == '-':
+		return Tree(A[0], None, Inorder2Tree(A[1:]))
+	elif A[0] == "(":
+		counter = 0 #Contador de parentesis
+		for i in range(1, len(A)):
+			if A[i] == "(":
+				counter += 1
+			elif A[i] == ")":
+				counter -= 1
+			elif (A[i] in ['Y', 'O', '>', '=']) and (counter == 0):
+				return Tree(A[i], Inorder2Tree(A[1:i]), Inorder2Tree(A[i + 1:-1]))
+	else:
+		return -1
+			
+	
 ##############################################################################
 # Definición de funciones de tableaux
 ##############################################################################
@@ -71,6 +88,10 @@ def imprime_hoja(H):
 			cadena += ", "
 		cadena += Inorder(f)
 	return cadena + "}"
+
+def imprime_listaHojas(L):
+	for h in L:
+		print(imprime_hoja(h))
 
 def complemento(l): # Retorna el complemento del literal l
 	if l.label == '-':
@@ -210,8 +231,12 @@ def Tableaux(f):
 	#		 verdadera a f
 	global listaHojas
 	global listaInterpsVerdaderas
-
-	A = String2Tree(f)
+	
+	try:
+		A = String2Tree(f)
+	except:
+		A = Inorder2Tree(f)
+	
 	print('La formula introducida es:\n', Inorder(A))
 	
 	listaHojas = [[A]]
